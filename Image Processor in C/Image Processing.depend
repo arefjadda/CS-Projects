@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1607041792 source:e:\projects\image processing\main.c
+	<stdio.h>
+	<stdlib.h>
+
