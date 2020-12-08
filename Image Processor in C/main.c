@@ -3,9 +3,11 @@
 #include <stdbool.h>
 #include <math.h>
 
+#define MAX_LENGTH 1025
+
 /*This is an image processor that only accepts PGM files with the P2 format.*/
 
-void arrayToImg(short imgArray[1025][1025], char* outName, char secLine[70], int* width, int* height, int* maxGray){
+void arrayToImg(short imgArray[MAX_LENGTH][MAX_LENGTH], char* outName, char secLine[70], int* width, int* height, int* maxGray){
     /*This function writes the array into a PGM file format*/
 
     /*Creating the file to write to*/
@@ -28,7 +30,7 @@ void arrayToImg(short imgArray[1025][1025], char* outName, char secLine[70], int
     fclose(outImg);
 };
 
-void imgToArray(char* fileName, int* width, int* height, int* maxGray, short imgArray[1025][1025]){
+void imgToArray(char* fileName, int* width, int* height, int* maxGray, short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function read the image into a 2D array and collects the header information*/
     FILE* inFile = fopen(fileName, "r");
 
@@ -58,16 +60,16 @@ void imgToArray(char* fileName, int* width, int* height, int* maxGray, short img
     fclose(inFile);
 }
 
-void invert(short imgArray[1025][1025]){
+void invert(short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function inverts the colors in the image*/
-    for(int i = 0; i<1025; i++){
-        for(int j=0; j<1025; j++){
+    for(int i = 0; i<MAX_LENGTH; i++){
+        for(int j=0; j<MAX_LENGTH; j++){
             imgArray[i][j] = 255 - imgArray[i][j];
         }
     }
 }
 
-void blur (short imgArray[1025][1025]){
+void blur (short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function uses the box blur kernel to convolve the image*/
     short kernel[3][3] = {
         {1, 1, 1},
@@ -84,7 +86,7 @@ void blur (short imgArray[1025][1025]){
     }
 }
 
-void gblur (short imgArray[1025][1025]){
+void gblur (short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function uses the Gaussian blur kernel to convolve the image*/
     short kernel[3][3] = {
         {1, 2, 1},
@@ -101,7 +103,7 @@ void gblur (short imgArray[1025][1025]){
     }
 }
 
-void outline (short imgArray[1025][1025]){
+void outline (short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function uses the outline/edge-detection kernel to convolve the image*/
     short kernel[3][3] = {
         {-1, -1, -1},
@@ -124,7 +126,7 @@ void outline (short imgArray[1025][1025]){
     }
 }
 
-void sharpen (short imgArray[1025][1025]){
+void sharpen (short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function uses the sharpen kernel to convolve the image*/
     short kernel[3][3] = {
         {0, -1, 0},
@@ -148,7 +150,7 @@ void sharpen (short imgArray[1025][1025]){
     }
 }
 
-void brightness(short imgArray[1025][1025]){
+void brightness(short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function inquires how the brightness should be changed and to what level
     and subsequently applies the processing*/
     char effect;
@@ -162,8 +164,8 @@ void brightness(short imgArray[1025][1025]){
         printf("How much would you like to brighten image? (a value between 0 to 10)\n");
         scanf("%lf", &intensity);
         intensity = 1 + (0.1 * intensity);
-        for(int i = 0; i<1025; i++){
-            for(int j= 0; j<1025; j++){
+        for(int i = 0; i<MAX_LENGTH; i++){
+            for(int j= 0; j<MAX_LENGTH; j++){
                 imgArray[i][j] = intensity * imgArray[i][j];
                 if (imgArray[i][j] > 255) {
                     imgArray[i][j] = 255;
@@ -175,8 +177,8 @@ void brightness(short imgArray[1025][1025]){
         printf("How much would you like to darken image? (a value between 0 to 10)\n");
         scanf("%lf", &intensity);
         intensity = 1 - (0.1 * intensity);
-        for(int i = 0; i<1025; i++){
-            for(int j= 0; j<1025; j++){
+        for(int i = 0; i<MAX_LENGTH; i++){
+            for(int j= 0; j<MAX_LENGTH; j++){
                 imgArray[i][j] = intensity * imgArray[i][j];
             }
         }
@@ -187,7 +189,7 @@ void brightness(short imgArray[1025][1025]){
 
 }
 
-void contrast(short imgArray[1025][1025]){
+void contrast(short imgArray[MAX_LENGTH][MAX_LENGTH]){
     /*This function attempts to create contrast changes in the image. The code is
     completely improvised, so this function does currently need improvement*/
     char effect;
@@ -201,8 +203,8 @@ void contrast(short imgArray[1025][1025]){
         printf("How much would you like to increase the contrast? (a value between 0 to 10)\n");
         scanf("%lf", &intensity);
         intensity = 1 + (0.1 * intensity);
-        for(int i = 0; i<1025; i++){
-            for(int j= 0; j<1025; j++){
+        for(int i = 0; i<MAX_LENGTH; i++){
+            for(int j= 0; j<MAX_LENGTH; j++){
                 if (imgArray[i][j] > 127) {
                     imgArray[i][j] = (sqrt(intensity) + 0.2) * imgArray[i][j];
                 } else {
@@ -218,8 +220,8 @@ void contrast(short imgArray[1025][1025]){
         printf("How much would you like to decrease the contrast? (a value between 0 to 10)\n");
         scanf("%lf", &intensity);
         intensity = 1 + (0.1 * intensity);
-        for(int i = 0; i<1025; i++){
-            for(int j= 0; j<1025; j++){
+        for(int i = 0; i<MAX_LENGTH; i++){
+            for(int j= 0; j<MAX_LENGTH; j++){
                 if (imgArray[i][j] > 127) {
                     imgArray[i][j] = imgArray[i][j] / (sqrt(intensity) + 0.2);
                 } else {
@@ -233,7 +235,7 @@ void contrast(short imgArray[1025][1025]){
     }
 }
 
-void transformation(short imgArray[1025][1025], short imgArrayDup[1025][1025], int* height, int* width, char* transformed){
+void transformation(short imgArray[MAX_LENGTH][MAX_LENGTH], short imgArrayDup[MAX_LENGTH][MAX_LENGTH], int* height, int* width, char* transformed){
     /*This function asks the user for the type of transformation they want to apply
     and it applie the commanded transformation*/
     char effect[7];
@@ -252,28 +254,28 @@ void transformation(short imgArray[1025][1025], short imgArrayDup[1025][1025], i
         switch(rotate){
         case 90:
             *transformed = 'y';
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArrayDup[i][j] = imgArray[j][i];
                 }
             }
             break;
         case 180:
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArrayDup[i][j] = imgArray[*height-i][*width-j];
                 }
             }
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArray[i][j] = imgArrayDup[i][j];
                 }
             }
             break;
         case 270:
             *transformed = 'y';
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArrayDup[i][j] = imgArray[*height - j][i];
                 }
             }
@@ -288,25 +290,25 @@ void transformation(short imgArray[1025][1025], short imgArrayDup[1025][1025], i
         scanf(" %c", &reflect);
         switch(reflect){
         case 'v':
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArrayDup[i][j] = imgArray[*height - i][j];
                 }
             }
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArray[i][j] = imgArrayDup[i][j];
                 }
             }
             break;
         case 'h':
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArrayDup[i][j] = imgArray[i][*width - j];
                 }
             }
-            for(int i = 0; i<1025; i++){
-                for(int j= 0; j<1025; j++){
+            for(int i = 0; i<MAX_LENGTH; i++){
+                for(int j= 0; j<MAX_LENGTH; j++){
                     imgArray[i][j] = imgArrayDup[i][j];
                 }
             }
@@ -318,7 +320,7 @@ void transformation(short imgArray[1025][1025], short imgArrayDup[1025][1025], i
 
 }
 
-void imgProcessor(short imgArray[1025][1025], short imgArrayDup[1025][1025], int* height, int* width, char* transformed){
+void imgProcessor(short imgArray[MAX_LENGTH][MAX_LENGTH], short imgArrayDup[MAX_LENGTH][MAX_LENGTH], int* height, int* width, char* transformed){
     /*This function asks the user for the type of image processing they want to do and
     sends them to the appropriate function*/
     char process[15];
@@ -357,7 +359,7 @@ void lowercase(char word[15]){
     }
 }
 
-void convolution(short imgArray[1025][1025], int* height, int* width){
+void convolution(short imgArray[MAX_LENGTH][MAX_LENGTH], int* height, int* width){
     /*This is the convolution function that points to the type of convolution function determined by the user*/
     char process[15];
 
@@ -413,8 +415,8 @@ int main() {
         int width;
         int height;
         int maxGray;
-        short imgArray[1025][1025];
-        short imgArrayDup[1025][1025];
+        short imgArray[MAX_LENGTH][MAX_LENGTH];
+        short imgArrayDup[MAX_LENGTH][MAX_LENGTH];
         char transformed = 'n';
         char inFileName[30] = "";
         char outFileName[35] = "";
